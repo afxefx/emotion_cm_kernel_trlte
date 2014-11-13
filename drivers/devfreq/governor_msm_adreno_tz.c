@@ -40,7 +40,6 @@ static DEFINE_SPINLOCK(tz_lock);
 #define BUSY_BIN	95
 #define LONG_FRAME	25000
 
-
 /*
  * CEILING is 50msec, larger than any standard
  * frame length, but less than the idle timer.
