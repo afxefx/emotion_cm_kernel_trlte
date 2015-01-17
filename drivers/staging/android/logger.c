@@ -30,6 +30,7 @@
 #include <linux/vmalloc.h>
 #include <linux/aio.h>
 #include "logger.h"
+#include "logger_interface.h"
 
 #include <asm/ioctls.h>
 #ifdef CONFIG_SEC_DEBUG
@@ -432,6 +433,12 @@ static void do_write_log(struct logger_log *log, const void *buf, size_t count)
 {
 	size_t len;
 
+	// if logger mode is disabled, terminate instantly
+	if (logger_mode == 0)
+	{
+			return;
+	} 
+        
 	len = min(count, log->size - log->w_off);
 	memcpy(log->buffer + log->w_off, buf, len);
 
@@ -454,6 +461,12 @@ static ssize_t do_write_log_from_user(struct logger_log *log,
 				      const void __user *buf, size_t count)
 {
 	size_t len;
+
+	// if logger mode is disabled, terminate instantly
+	if (logger_mode == 0)
+	{
+			return 0;
+	} 
 
 	len = min(count, log->size - log->w_off);
 	if (len && copy_from_user(log->buffer + log->w_off, buf, len))
@@ -503,7 +516,7 @@ static ssize_t logger_aio_write(struct kiocb *iocb, const struct iovec *iov,
 			 unsigned long nr_segs, loff_t ppos)
 {
 	struct logger_log *log = file_get_log(iocb->ki_filp);
-	size_t orig;
+	size_t orig = log->w_off;
 	struct logger_entry header;
 	struct timespec now;
 	ssize_t ret = 0;
@@ -523,8 +536,6 @@ static ssize_t logger_aio_write(struct kiocb *iocb, const struct iovec *iov,
 		return 0;
 
 	mutex_lock(&log->mutex);
-
-	orig = log->w_off;
 
 	/*
 	 * Fix up any readers, pulling them forward to the first readable
@@ -930,7 +941,43 @@ out_free_buffer:
 
 	return ret;
 #endif //CONFIG_SEC_DEBUG	
+
 }
+
+
+#if (defined CONFIG_SEC_DEBUG && defined CONFIG_SEC_DEBUG_SUBSYS)
+int sec_debug_subsys_set_logger_info(
+	struct sec_debug_subsys_logger_log_info *log_info)
+{
+	/*
+	struct secdbg_logger_log_info log_info = {
+		.stinfo = {
+			.buffer_offset = offsetof(struct logger_log, buffer),
+			.w_off_offset = offsetof(struct logger_log, w_off),
+			.head_offset = offsetof(struct logger_log, head),
+			.size_offset = offsetof(struct logger_log, size),
+			.size_t_typesize = sizeof(size_t),
+		},
+	};
+	*/
+	log_info->stinfo.buffer_offset = offsetof(struct logger_log, buffer);
+	log_info->stinfo.w_off_offset = offsetof(struct logger_log, w_off);
+	log_info->stinfo.head_offset = offsetof(struct logger_log, head);
+	log_info->stinfo.size_offset = offsetof(struct logger_log, size);
+	log_info->stinfo.size_t_typesize = sizeof(size_t);
+
+	log_info->main.log_paddr = __pa(&log_main);
+	log_info->main.buffer_paddr = __pa(_buf_log_main);
+	log_info->system.log_paddr = __pa(&log_system);
+	log_info->system.buffer_paddr = __pa(_buf_log_system);
+	log_info->events.log_paddr = __pa(&log_events);
+	log_info->events.buffer_paddr = __pa(_buf_log_events);
+	log_info->radio.log_paddr = __pa(&log_radio);
+	log_info->radio.buffer_paddr = __pa(_buf_log_radio);
+
+	return 0;
+}
+#endif
 
 
 #if (defined CONFIG_SEC_DEBUG && defined CONFIG_SEC_DEBUG_SUBSYS)
