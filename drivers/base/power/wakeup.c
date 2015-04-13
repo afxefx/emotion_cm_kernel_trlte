@@ -398,6 +398,11 @@ EXPORT_SYMBOL_GPL(device_set_wakeup_enable);
 static void wakeup_source_activate(struct wakeup_source *ws)
 {
 	unsigned int cec;
+
+        if (!enable_sensorhub_wl && !strcmp(ws->name, "ssp_sensorhub_wake_lock")) {
+		pr_info("wakeup source sensorhub activation skipped\n");
+		return;
+	}
 	
 	if (!enable_sensorhub_wl && !strcmp(ws->name, "ssp_sensorhub_wake_lock")) {
 		pr_debug("wakeup source sensorhub activation skipped\n");
