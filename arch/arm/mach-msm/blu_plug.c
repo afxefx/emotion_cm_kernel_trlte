@@ -38,7 +38,7 @@
 #define MAX_FREQ_SCREENOFF      (0)
 #define MAX_FREQ_PLUG           (3072000)
 #define DEF_PLUG_THRESHOLD      (70)
-#define BLU_PLUG_ENABLED	(1)
+#define BLU_PLUG_ENABLED	(0)
 
 static unsigned int up_threshold = UP_THRESHOLD;;
 static unsigned int delay = DELAY;
