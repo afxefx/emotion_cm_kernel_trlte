@@ -88,9 +88,8 @@ static const unsigned freqs[] = { 400000, 300000, 200000, 100000 };
  * echo Y > /sys/module/mmc_core/parameters/crc (Enlabled) or
  * echo 1 > /sys/module/mmc_core/parameters/crc (Enabled)
  */
-
 bool use_spi_crc = 0;
-module_param(use_spi_crc, bool, 0644);
+module_param(use_spi_crc, bool, 0);
 
 /*
  * We normally treat cards as removed during suspend if they are not
