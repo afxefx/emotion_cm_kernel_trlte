@@ -485,6 +485,39 @@ static void __exit dyn_hp_exit(void)
 	pr_info("%s: deactivated\n", __func__);
 }
 
+
+/* enabled */
+static int set_enabled(const char *val, const struct kernel_param *kp)
+{
+	int ret = 0;
+	unsigned int i;
+	int blu = 0;
+
+	ret = kstrtouint(val, 10, &i);
+	if (ret)
+		return -EINVAL;
+	if (i < 0 || i > 1)
+		return 0;
+		
+	if (i == blu_plug_enabled)
+		return i;
+
+	ret = param_set_uint(val, kp);
+	blu_plug_enabled = i;
+	if ((blu_plug_enabled == 1))
+		blu = dyn_hp_init();
+	if ((blu_plug_enabled == 0))
+		dyn_hp_exit();
+	return i;
+}
+
+static struct kernel_param_ops enabled_ops = {
+	.set = set_enabled,
+	.get = param_get_uint,
+};
+
+module_param_cb(enabled, &enabled_ops, &blu_plug_enabled, 0644);
+
 MODULE_AUTHOR("Stratos Karafotis <stratosk@semaphore.gr");
 MODULE_AUTHOR("engstk <eng.stk@sapo.pt>");
 MODULE_DESCRIPTION("'dyn_hotplug' - A dynamic hotplug driver for mako / hammerhead / shamu (blu_plug)");
