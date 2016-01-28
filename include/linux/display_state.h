@@ -1,4 +1,7 @@
+<<<<<<< HEAD
  
+=======
+>>>>>>> 391ceb8... display: add a simple api to query the display state (on/off) at any point in time
 /*
  * include/linux/display_state.h
  *
