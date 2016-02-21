@@ -368,9 +368,7 @@ out_release:
 int __ref cpu_down(unsigned int cpu)
 {
 	int err;
-
 	cpu_maps_update_begin();
-
 	if (cpu_hotplug_disabled) {
 		err = -EBUSY;
 		goto out;
