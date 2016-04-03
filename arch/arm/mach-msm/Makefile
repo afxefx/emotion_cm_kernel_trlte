@@ -157,6 +157,7 @@ obj-$(CONFIG_INTELLI_HOTPLUG) += intelli_hotplug.o
 obj-$(CONFIG_MSM_CPUFREQ_LIMIT) += cpufreq_limit.o
 obj-$(CONFIG_BRICKED_HOTPLUG) += bricked_hotplug.o
 obj-$(CONFIG_ALUCARD_HOTPLUG) += alucard_hotplug.o
+obj-$(CONFIG_THUNDERPLUG_CONTROL) += thunderplug.o
 
 obj-$(CONFIG_BLU_PLUG) += blu_plug.o
 obj-$(CONFIG_MSM_SLEEPER) += msm-sleeper.o
