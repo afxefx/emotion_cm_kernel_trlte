@@ -18,3 +18,15 @@ obj-$(CONFIG_MSM_WATCHDOG_V2) += watchdog_v2.o
 obj-$(CONFIG_MEM_SHARE_QMI_SERVICE)		+= memshare/
 obj-y		+= socinfo.o
 obj-$(CONFIG_QCOM_EARLY_RANDOM)	+= early_random.o
+obj-$(CONFIG_ZEN_DECISION)    += msm_zen_decision.o
+
+obj-$(CONFIG_ALUCARD_HOTPLUG) += alucard_hotplug.o
+obj-$(CONFIG_AUTOSMP)         += autosmp.o
+obj-$(CONFIG_BLU_PLUG)        += blu_plug.o
+obj-$(CONFIG_BRICKED_HOTPLUG) += bricked_hotplug.o
+obj-$(CONFIG_INTELLI_PLUG)    += intelli_plug.o
+obj-$(CONFIG_MSM_SLEEPER)     += msm-sleeper.o
+obj-$(CONFIG_THUNDERPLUG_CONTROL) += thunderplug.o
+obj-$(CONFIG_MSM_LIMITER)     += msm_limiter.o
+
+obj-$(CONFIG_STATE_NOTIFIER)  += state_notifier.o
