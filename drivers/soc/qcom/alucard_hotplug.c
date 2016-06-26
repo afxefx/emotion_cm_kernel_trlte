@@ -45,10 +45,10 @@ static struct hotplug_tuners {
 	atomic_t cpu_down_rate;
 	atomic_t maxcoreslimit;
 } hotplug_tuners_ins = {
-	.hotplug_sampling_rate = ATOMIC_INIT(60000),
-	.hotplug_enable = ATOMIC_INIT(0),
-	.cpu_up_rate = ATOMIC_INIT(10),
-	.cpu_down_rate = ATOMIC_INIT(20),
+	.hotplug_sampling_rate = ATOMIC_INIT(20000),
+	.hotplug_enable = ATOMIC_INIT(1),
+	.cpu_up_rate = ATOMIC_INIT(20),
+	.cpu_down_rate = ATOMIC_INIT(35),
 	.maxcoreslimit = ATOMIC_INIT(NR_CPUS),
 };
 
@@ -157,23 +157,23 @@ static unsigned int get_nr_run_avg(void)
 
 static unsigned hotplugging_rate = 0;
 
-static atomic_t hotplug_freq[4][2] = {
+static atomic_t hotplug_freq[4][4] = {
 	{ATOMIC_INIT(0), ATOMIC_INIT(960000)},
 	{ATOMIC_INIT(652800), ATOMIC_INIT(960000)},
 	{ATOMIC_INIT(652800), ATOMIC_INIT(960000)},
-	{ATOMIC_INIT(652800), ATOMIC_INIT(0)}
+	{ATOMIC_INIT(652800), ATOMIC_INIT(960000)}
 };
-static atomic_t hotplug_load[4][2] = {
+static atomic_t hotplug_load[4][4] = {
 	{ATOMIC_INIT(0), ATOMIC_INIT(65)},
 	{ATOMIC_INIT(30), ATOMIC_INIT(65)},
 	{ATOMIC_INIT(30), ATOMIC_INIT(65)},
-	{ATOMIC_INIT(30), ATOMIC_INIT(0)}
+	{ATOMIC_INIT(30), ATOMIC_INIT(65)}
 };
-static atomic_t hotplug_rq[4][2] = {
-	{ATOMIC_INIT(0), ATOMIC_INIT(200)}, 
-	{ATOMIC_INIT(200), ATOMIC_INIT(200)}, 
+static atomic_t hotplug_rq[4][4] = {
+	{ATOMIC_INIT(0), ATOMIC_INIT(300)}, 
 	{ATOMIC_INIT(200), ATOMIC_INIT(300)}, 
-	{ATOMIC_INIT(300), ATOMIC_INIT(0)}
+	{ATOMIC_INIT(200), ATOMIC_INIT(300)}, 
+	{ATOMIC_INIT(200), ATOMIC_INIT(300)}
 };
 
 #define show_one(file_name, object)					\
@@ -213,86 +213,104 @@ static ssize_t store_##file_name##_##num_core##_##up_down		\
 }
 
 /* hotplug freq */
+show_hotplug_param(hotplug_freq, 1, 0);
 show_hotplug_param(hotplug_freq, 1, 1);
 show_hotplug_param(hotplug_freq, 2, 0);
-#if NR_CPUS >= 4
 show_hotplug_param(hotplug_freq, 2, 1);
+#if NR_CPUS >= 4
 show_hotplug_param(hotplug_freq, 3, 0);
 show_hotplug_param(hotplug_freq, 3, 1);
 show_hotplug_param(hotplug_freq, 4, 0);
+show_hotplug_param(hotplug_freq, 4, 1);
 #endif
 /* hotplug load */
+show_hotplug_param(hotplug_load, 1, 0);
 show_hotplug_param(hotplug_load, 1, 1);
 show_hotplug_param(hotplug_load, 2, 0);
-#if NR_CPUS >= 4
 show_hotplug_param(hotplug_load, 2, 1);
+#if NR_CPUS >= 4
 show_hotplug_param(hotplug_load, 3, 0);
 show_hotplug_param(hotplug_load, 3, 1);
 show_hotplug_param(hotplug_load, 4, 0);
+show_hotplug_param(hotplug_load, 4, 1);
 #endif
 /* hotplug rq */
+show_hotplug_param(hotplug_rq, 1, 0);
 show_hotplug_param(hotplug_rq, 1, 1);
 show_hotplug_param(hotplug_rq, 2, 0);
-#if NR_CPUS >= 4
 show_hotplug_param(hotplug_rq, 2, 1);
+#if NR_CPUS >= 4
 show_hotplug_param(hotplug_rq, 3, 0);
 show_hotplug_param(hotplug_rq, 3, 1);
 show_hotplug_param(hotplug_rq, 4, 0);
+show_hotplug_param(hotplug_rq, 4, 1);
 #endif
 
 /* hotplug freq */
+store_hotplug_param(hotplug_freq, 1, 0);
 store_hotplug_param(hotplug_freq, 1, 1);
 store_hotplug_param(hotplug_freq, 2, 0);
-#if NR_CPUS >= 4
 store_hotplug_param(hotplug_freq, 2, 1);
+#if NR_CPUS >= 4
 store_hotplug_param(hotplug_freq, 3, 0);
 store_hotplug_param(hotplug_freq, 3, 1);
 store_hotplug_param(hotplug_freq, 4, 0);
+store_hotplug_param(hotplug_freq, 4, 1);
 #endif
 /* hotplug load */
+store_hotplug_param(hotplug_load, 1, 0);
 store_hotplug_param(hotplug_load, 1, 1);
 store_hotplug_param(hotplug_load, 2, 0);
-#if NR_CPUS >= 4
 store_hotplug_param(hotplug_load, 2, 1);
+#if NR_CPUS >= 4
 store_hotplug_param(hotplug_load, 3, 0);
 store_hotplug_param(hotplug_load, 3, 1);
 store_hotplug_param(hotplug_load, 4, 0);
+store_hotplug_param(hotplug_load, 4, 1);
 #endif
 /* hotplug rq */
+store_hotplug_param(hotplug_rq, 1, 0);
 store_hotplug_param(hotplug_rq, 1, 1);
 store_hotplug_param(hotplug_rq, 2, 0);
-#if NR_CPUS >= 4
 store_hotplug_param(hotplug_rq, 2, 1);
+#if NR_CPUS >= 4
 store_hotplug_param(hotplug_rq, 3, 0);
 store_hotplug_param(hotplug_rq, 3, 1);
 store_hotplug_param(hotplug_rq, 4, 0);
+store_hotplug_param(hotplug_rq, 4, 1);
 #endif
 
+define_one_global_rw(hotplug_freq_1_0);
 define_one_global_rw(hotplug_freq_1_1);
 define_one_global_rw(hotplug_freq_2_0);
-#if NR_CPUS >= 4
 define_one_global_rw(hotplug_freq_2_1);
+#if NR_CPUS >= 4
 define_one_global_rw(hotplug_freq_3_0);
 define_one_global_rw(hotplug_freq_3_1);
 define_one_global_rw(hotplug_freq_4_0);
+define_one_global_rw(hotplug_freq_4_1);
 #endif
 
+define_one_global_rw(hotplug_load_1_0);
 define_one_global_rw(hotplug_load_1_1);
 define_one_global_rw(hotplug_load_2_0);
-#if NR_CPUS >= 4
 define_one_global_rw(hotplug_load_2_1);
+#if NR_CPUS >= 4
 define_one_global_rw(hotplug_load_3_0);
 define_one_global_rw(hotplug_load_3_1);
 define_one_global_rw(hotplug_load_4_0);
+define_one_global_rw(hotplug_load_4_1);
 #endif
 
+define_one_global_rw(hotplug_rq_1_0);
 define_one_global_rw(hotplug_rq_1_1);
 define_one_global_rw(hotplug_rq_2_0);
-#if NR_CPUS >= 4
 define_one_global_rw(hotplug_rq_2_1);
+#if NR_CPUS >= 4
 define_one_global_rw(hotplug_rq_3_0);
 define_one_global_rw(hotplug_rq_3_1);
 define_one_global_rw(hotplug_rq_4_0);
+define_one_global_rw(hotplug_rq_4_1);
 #endif
 
 static void __cpuinit cpus_hotplugging(bool state) {
@@ -487,29 +505,35 @@ define_one_global_rw(maxcoreslimit);
 static struct attribute *alucard_hotplug_attributes[] = {
 	&hotplug_sampling_rate.attr,
 	&hotplug_enable.attr,
+	&hotplug_freq_1_0.attr,
 	&hotplug_freq_1_1.attr,
 	&hotplug_freq_2_0.attr,
-#if NR_CPUS >= 4
 	&hotplug_freq_2_1.attr,
+#if NR_CPUS >= 4
 	&hotplug_freq_3_0.attr,
 	&hotplug_freq_3_1.attr,
 	&hotplug_freq_4_0.attr,
+	&hotplug_freq_4_1.attr,
 #endif
+	&hotplug_load_1_0.attr,
 	&hotplug_load_1_1.attr,
 	&hotplug_load_2_0.attr,
-#if NR_CPUS >= 4
 	&hotplug_load_2_1.attr,
+#if NR_CPUS >= 4
 	&hotplug_load_3_0.attr,
 	&hotplug_load_3_1.attr,
 	&hotplug_load_4_0.attr,
+	&hotplug_load_4_1.attr,
 #endif
+	&hotplug_rq_1_0.attr,
 	&hotplug_rq_1_1.attr,
 	&hotplug_rq_2_0.attr,
-#if NR_CPUS >= 4
 	&hotplug_rq_2_1.attr,
+#if NR_CPUS >= 4
 	&hotplug_rq_3_0.attr,
 	&hotplug_rq_3_1.attr,
 	&hotplug_rq_4_0.attr,
+	&hotplug_rq_4_1.attr,
 #endif
 	&cpu_up_rate.attr,
 	&cpu_down_rate.attr,
