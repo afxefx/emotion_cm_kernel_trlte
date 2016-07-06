@@ -45,9 +45,9 @@ static struct hotplug_tuners {
 	atomic_t cpu_down_rate;
 	atomic_t maxcoreslimit;
 } hotplug_tuners_ins = {
-	.hotplug_sampling_rate = ATOMIC_INIT(20000),
+	.hotplug_sampling_rate = ATOMIC_INIT(40000),
 	.hotplug_enable = ATOMIC_INIT(1),
-	.cpu_up_rate = ATOMIC_INIT(20),
+	.cpu_up_rate = ATOMIC_INIT(15),
 	.cpu_down_rate = ATOMIC_INIT(35),
 	.maxcoreslimit = ATOMIC_INIT(NR_CPUS),
 };
@@ -56,7 +56,7 @@ static struct hotplug_tuners {
 #define DOWN_INDEX		(0)
 #define UP_INDEX		(1)
 
-#define RQ_AVG_TIMER_RATE	20
+#define RQ_AVG_TIMER_RATE	400
 
 struct runqueue_data {
 	unsigned int nr_run_avg;
