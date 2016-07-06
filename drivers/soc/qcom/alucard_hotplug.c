@@ -52,11 +52,11 @@ static struct hotplug_tuners {
 	.maxcoreslimit = ATOMIC_INIT(NR_CPUS),
 };
 
-#define MAX_HOTPLUG_RATE		(40)
-#define DOWN_INDEX		(0)
+#define MAX_HOTPLUG_RATE        (80)
+#define DOWN_INDEX		(1)
 #define UP_INDEX		(1)
 
-#define RQ_AVG_TIMER_RATE	400
+#define RQ_AVG_TIMER_RATE	10
 
 struct runqueue_data {
 	unsigned int nr_run_avg;
