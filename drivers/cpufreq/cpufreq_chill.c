@@ -26,8 +26,8 @@
 #define DEF_FREQUENCY_DOWN_THRESHOLD_SUSPENDED	(45)
 #define DEF_FREQUENCY_STEP			(5)
 #define DEF_SAMPLING_RATE			(20000)
-#define DEF_BOOST_ENABLED			(1)
-#define DEF_BOOST_COUNT				(8)
+#define DEF_BOOST_ENABLED			(0)
+#define DEF_BOOST_COUNT				(4)
 
 static DEFINE_PER_CPU(struct cs_cpu_dbs_info_s, cs_cpu_dbs_info);
 
@@ -343,7 +343,7 @@ static ssize_t store_boost_count(struct dbs_data *dbs_data, const char *buf,
 	if (input >= 5)
 		input = 5;
 
-	if (input = 0)
+	if (input == 0)
 		input = 0;
 
 	cs_tuners->boost_count = input;
