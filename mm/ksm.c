@@ -37,7 +37,6 @@
 #include <linux/freezer.h>
 #include <linux/oom.h>
 #include <linux/numa.h>
-#include <linux/show_mem_notifier.h>
 
 #include <asm/tlbflush.h>
 #include "internal.h"
@@ -219,13 +218,10 @@ static unsigned long ksm_pages_unshared;
 static unsigned long ksm_rmap_items;
 
 /* Number of pages ksmd should scan in one batch */
-static unsigned int ksm_thread_pages_to_scan = 256;
+static unsigned int ksm_thread_pages_to_scan = 100;
 
 /* Milliseconds ksmd should sleep between batches */
-static unsigned int ksm_thread_sleep_millisecs = 1500;
-
-/* Boolean to indicate whether to use deferred timer or not */
-static bool use_deferred_timer = true;
+static unsigned int ksm_thread_sleep_millisecs = 20;
 
 /* Boolean to indicate whether to use deferred timer or not */
 static bool use_deferred_timer = true;
@@ -252,20 +248,6 @@ static DEFINE_SPINLOCK(ksm_mmlist_lock);
 #define KSM_KMEM_CACHE(__struct, __flags) kmem_cache_create("ksm_"#__struct,\
 		sizeof(struct __struct), __alignof__(struct __struct),\
 		(__flags), NULL)
-
-static int ksm_show_mem_notifier(struct notifier_block *nb,
-				unsigned long action,
-				void *data)
-{
-	pr_info("ksm_pages_sharing: %lu\n", ksm_pages_sharing);
-	pr_info("ksm_pages_shared: %lu\n", ksm_pages_shared);
-
-	return 0;
-}
-
-static struct notifier_block ksm_show_mem_notifier_block = {
-	.notifier_call = ksm_show_mem_notifier,
-};
 
 static int __init ksm_slab_init(void)
 {
@@ -2288,7 +2270,7 @@ static ssize_t sleep_millisecs_store(struct kobject *kobj,
 	unsigned long msecs;
 	int err;
 
-	err = kstrtoul(buf, 10, &msecs);
+	err = strict_strtoul(buf, 10, &msecs);
 	if (err || msecs > UINT_MAX)
 		return -EINVAL;
 
@@ -2311,7 +2293,7 @@ static ssize_t pages_to_scan_store(struct kobject *kobj,
 	int err;
 	unsigned long nr_pages;
 
-	err = kstrtoul(buf, 10, &nr_pages);
+	err = strict_strtoul(buf, 10, &nr_pages);
 	if (err || nr_pages > UINT_MAX)
 		return -EINVAL;
 
@@ -2333,7 +2315,7 @@ static ssize_t run_store(struct kobject *kobj, struct kobj_attribute *attr,
 	int err;
 	unsigned long flags;
 
-	err = kstrtoul(buf, 10, &flags);
+	err = strict_strtoul(buf, 10, &flags);
 	if (err || flags > UINT_MAX)
 		return -EINVAL;
 	if (flags > KSM_RUN_UNMERGE)
@@ -2368,26 +2350,6 @@ static ssize_t run_store(struct kobject *kobj, struct kobj_attribute *attr,
 	return count;
 }
 KSM_ATTR(run);
-
-static ssize_t deferred_timer_show(struct kobject *kobj,
-				    struct kobj_attribute *attr, char *buf)
-{
-	return snprintf(buf, 8, "%d\n", use_deferred_timer);
-}
-
-static ssize_t deferred_timer_store(struct kobject *kobj,
-				     struct kobj_attribute *attr,
-				     const char *buf, size_t count)
-{
-	unsigned long enable;
-	int err;
-
-	err = kstrtoul(buf, 10, &enable);
-	use_deferred_timer = enable;
-
-	return count;
-}
-KSM_ATTR(deferred_timer);
 
 #ifdef CONFIG_NUMA
 static ssize_t merge_across_nodes_show(struct kobject *kobj,
@@ -2565,8 +2527,6 @@ static int __init ksm_init(void)
 	/* There is no significance to this priority 100 */
 	hotplug_memory_notifier(ksm_memory_callback, 100);
 #endif
-
-	show_mem_notifier_register(&ksm_show_mem_notifier_block);
 	return 0;
 
 out_free:
