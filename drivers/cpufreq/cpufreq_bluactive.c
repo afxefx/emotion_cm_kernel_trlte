@@ -23,11 +23,11 @@
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/rwsem.h>
-#include <linux/sched.h>
 #include <linux/tick.h>
 #include <linux/time.h>
 #include <linux/timer.h>
 #include <linux/workqueue.h>
+#include <linux/sched/prio.h>
 #include <linux/kthread.h>
 #include <linux/slab.h>
 #include <linux/kernel_stat.h>
