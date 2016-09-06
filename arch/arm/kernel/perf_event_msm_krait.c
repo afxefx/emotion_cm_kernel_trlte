@@ -207,10 +207,6 @@ static unsigned int get_krait_evtinfo(unsigned int krait_evt_type,
 	code = (krait_evt_type & 0x00FF0) >> 4;
 	group = krait_evt_type & 0x0000F;
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 32a810f... msm: arm: krait: Patch for krait array access out of bound
 	if (prefix != KRAIT_EVT_PREFIX && prefix != KRAIT_VENUMEVT_PREFIX)
 		return -EINVAL;
 
